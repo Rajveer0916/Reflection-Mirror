@@ -40,28 +40,32 @@ class MirrorStatus:
         STATUS_CHECKING = "📝 CheckUp"
         STATUS_SEEDING = "🌧 Seed"
     else:
-        STATUS_UPLOADING = "Upload"
-        STATUS_DOWNLOADING = "Download"
-        STATUS_CLONING = "Clone"
-        STATUS_WAITING = "Queue"
-        STATUS_PAUSED = "Pause"
-        STATUS_ARCHIVING = "Archive"
-        STATUS_EXTRACTING = "Extract"
-        STATUS_SPLITTING = "Split"
-        STATUS_CHECKING = "CheckUp"
-        STATUS_SEEDING = "Seed"
+        STATUS_UPLOADING = "📤 Upload"
+        STATUS_DOWNLOADING = "📥 Download"
+        STATUS_CLONING = "♻️ Clone"
+        STATUS_WAITING = "💤 Queue"
+        STATUS_PAUSED = "⛔️ Pause"
+        STATUS_ARCHIVING = "🔐 Archive"
+        STATUS_EXTRACTING = "📂 Extract"
+        STATUS_SPLITTING = "✂️ Split"
+        STATUS_CHECKING = "📝 CheckUp"
+        STATUS_SEEDING = "🌧 Seed"
 
 class EngineStatus:
-    STATUS_ARIA = "Aria2c v1.35.0"
-    STATUS_GD = "Google Api v2.51.0"
-    STATUS_MEGA = "MegaSDK v3.12.0"
-    STATUS_QB = "qBittorrent v4.3.9"
-    STATUS_TG = "Pyrogram v2.0.27"
-    STATUS_YT = "YT-dlp v22.5.18"
-    STATUS_EXT = "Extract | pExtract"
-    STATUS_SPLIT = "FFmpeg v2.9.1"
-    STATUS_ZIP = "p7zip v16.02"
+    STATUS_ARIA = "<b>Aria2c v1.35.0</b>"
+    STATUS_GD = "<b>Google Api v2.51.0</b>"
+    STATUS_MEGA = "<b>MegaSDK v3.12.0</b>"
+    STATUS_QB = "<b>qBittorrent v4.3.9</b>"
+    STATUS_TG = "<b>Pyrogram v2.0.27</b>"
+    STATUS_YT = "<b>YT-dlp v22.5.18</b>"
+    STATUS_EXT = "<b>Extract | pExtract</b>"
+    STATUS_SPLIT = "<b>FFmpeg v2.9.1</b>"
+    STATUS_ZIP = "<b>p7zip v16.02</b>"
 
+PROGRESS_MAX_SIZE = 100 // 9
+PROGRESS_INCOMPLETE = ['◔', '◔', '◑', '◑', '◑', '◕', '◕']
+# PROGRESS_INCOMPLETE = ['◌', '◌', '◎', '◎', '◎', '◍', '◍', '◍']
+# PROGRESS_INCOMPLETE = ['▤', '▤', '▦', '▦', '▦', '▩', '▩']
     
 SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
@@ -158,9 +162,12 @@ def get_progress_bar_string(status):
     p = 0 if total == 0 else round(completed * 100 / total)
     p = min(max(p, 0), 100)
     cFull = p // 8
+    cPart = p % 8 - 1
     p_str = FINISHED_PROGRESS_STR * cFull
-    p_str += UN_FINISHED_PROGRESS_STR  * (12 - cFull)
-    p_str = f"[{p_str}]"
+    if cPart >= 0:
+        p_str += PROGRESS_INCOMPLETE[cPart]
+    p_str += UN_FINISHED_PROGRESS_STR  * (PROGRESS_MAX_SIZE - cFull)
+    p_str = f" ⠧{p_str}⠹"
     return p_str
 
 def get_readable_message():
@@ -188,7 +195,7 @@ def get_readable_message():
                     msg += f"\n<b>├⏳ ETA:</b> {download.eta()}"
                     msg += f"\n<b>├⏳ Elapsed: </b>{get_readable_time(time() - download.message.date.timestamp())}"
                     msg += f"\n<b>├⛓️ Engine :</b> {download.eng()}"
-                    msg += f"\n<b>├⚠️ Warn: </b> <code>/warn {download.message.from_user.id}</code>"
+                   # msg += f"\n<b>├⚠️ Warn: </b> <code>/warn {download.message.from_user.id}</code>"
                 else:
                     msg += f"\n<b>├</b>{get_progress_bar_string(download)} {download.progress()}"
                     msg += f"\n<b>├ Processed:</b> {get_readable_file_size(download.processed_bytes())} of {download.size()}"
@@ -196,16 +203,16 @@ def get_readable_message():
                     msg += f"\n<b>├ ETA:</b> {download.eta()}"
                     msg += f"\n<b>├ Elapsed: </b>{get_readable_time(time() - download.message.date.timestamp())}"
                     msg += f"\n<b>├ Engine :</b> {download.eng()}"
-                    msg += f"\n<b>├ Warn: </b> <code>/warn {download.message.from_user.id}</code>"
+                   # msg += f"\n<b>├ Warn: </b> <code>/warn {download.message.from_user.id}</code>"
 
                 if hasattr(download, 'seeders_num'):
                     try:
                         if EMOJI_THEME is True:
                             msg += f"\n<b>├🌱 Seeders:</b> {download.seeders_num()} | <b>🐌 Leechers:</b> {download.leechers_num()}"
-                            msg += f"\n<b>├🧿 To Select:</b> <code>/{BotCommands.BtSelectCommand} {download.gid()}</code>"
+                           # msg += f"\n<b>├🧿 To Select:</b> <code>/{BotCommands.BtSelectCommand} {download.gid()}</code>"
                         else:
                             msg += f"\n<b>├ Seeders:</b> {download.seeders_num()} | <b>Leechers:</b> {download.leechers_num()}"
-                            msg += f"\n<b>├🧿 To Select:</b> <code>/{BotCommands.BtSelectCommand} {download.gid()}</code>"
+                           # msg += f"\n<b>├🧿 To Select:</b> <code>/{BotCommands.BtSelectCommand} {download.gid()}</code>"
                     except:
                         pass
                 if download.message.chat.type != 'private':
@@ -454,14 +461,14 @@ def bot_sys_stats():
         if stats.status() == MirrorStatus.STATUS_SPLITTING:
             num_split += 1
     return f"""
-{AUTHOR_NAME} Mirror Stats
+Made with ❤️ by Ajay
 
 Tasks: {tasks}
 
 CPU: {progress_bar(cpu)} {cpu}%
 RAM: {progress_bar(mem)} {mem}%
-
 DISK: {progress_bar(disk)} {disk}%
+
 SENT: {sent} | RECV: {recv}
 
 DLs: {num_active} | ULs: {num_upload} | SEEDING: {num_seeding}
